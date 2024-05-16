@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_toast/simple_toast.dart';
 
 void main() {
   runApp(const MyApp());
@@ -45,7 +46,20 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Container(),
+        child: TextButton(
+          style: const ButtonStyle(
+              foregroundColor: MaterialStatePropertyAll<Color>(
+                Colors.white,
+              ),
+              backgroundColor: MaterialStatePropertyAll<Color>(
+                Color.fromARGB(255, 100, 49, 109),
+              )),
+          onPressed: () {
+            SimpleToast.showErrorToast(
+                context, "Title", "This is a message", Position.bottom);
+          },
+          child: const Text("Show Info Toast"),
+        ),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );

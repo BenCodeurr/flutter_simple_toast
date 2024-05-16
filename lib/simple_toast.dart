@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+enum Position { top, bottom, center }
+
 class SimpleToast {
   static Timer? toastTimer;
   static OverlayEntry? _overlayEntry;
 
   //show a toast to display information
   static void showInfoToast(
-      BuildContext context, String title, String message) {
+      BuildContext context, String title, String message, Position position) {
     if (toastTimer == null || !toastTimer!.isActive) {
       _overlayEntry = createOverlayEntry(context, title, message,
-          const Color(0xFF767676), const Color(0xFFF9F9F9));
+          const Color(0xFF767676), const Color(0xFFF9F9F9), position);
       Overlay.of(context).insert(_overlayEntry!);
       toastTimer = Timer(const Duration(seconds: 2), () {
         if (_overlayEntry != null) {
@@ -22,10 +24,10 @@ class SimpleToast {
 
 //show toast to display success information
   static void showSuccessToast(
-      BuildContext context, String title, String message) {
+      BuildContext context, String title, String message, Position position) {
     if (toastTimer == null || !toastTimer!.isActive) {
       _overlayEntry = createOverlayEntry(context, title, message,
-          const Color(0xFF009C49), const Color(0xFFD6EBE0));
+          const Color(0xFF009C49), const Color(0xFFD6EBE0), position);
       Overlay.of(context).insert(_overlayEntry!);
       toastTimer = Timer(const Duration(seconds: 2), () {
         if (_overlayEntry != null) {
@@ -37,10 +39,10 @@ class SimpleToast {
 
 //show message for errors
   static void showErrorToast(
-      BuildContext context, String title, String message) {
+      BuildContext context, String title, String message, Position position) {
     if (toastTimer == null || !toastTimer!.isActive) {
       _overlayEntry = createOverlayEntry(context, title, message,
-          const Color(0xFFD6292E), const Color(0xFFEEE0DF));
+          const Color(0xFFD6292E), const Color(0xFFEEE0DF), position);
       Overlay.of(context).insert(_overlayEntry!);
       toastTimer = Timer(const Duration(seconds: 3), () {
         if (_overlayEntry != null) {
@@ -52,10 +54,16 @@ class SimpleToast {
 
 //basic construction of the toast message
   static OverlayEntry createOverlayEntry(BuildContext context, String title,
-      String message, Color color, Color bgColor) {
+      String message, Color color, Color bgColor, Position position) {
     return OverlayEntry(
       builder: (context) => Positioned(
-        bottom: 16,
+        bottom: position == Position.bottom
+            ? 16
+            : position == Position.top
+                ? MediaQuery.of(context).size.height - 190
+                : position == Position.center
+                    ? MediaQuery.of(context).size.height / 2
+                    : null,
         left: 16,
         right: 16,
         child: Container(
@@ -78,8 +86,13 @@ class SimpleToast {
                         title,
                         textAlign: TextAlign.start,
                         softWrap: true,
-                        style: _customTextStyle(16, fontColor: color),
+                        style: _customTextStyle(
+                          16,
+                          fontColor: color,
+                          weight: FontWeight.bold,
+                        ),
                       ),
+                      const SizedBox(height: 10),
                       Text(
                         message,
                         textAlign: TextAlign.start,
